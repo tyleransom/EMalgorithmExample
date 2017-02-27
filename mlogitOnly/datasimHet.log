@@ -1,0 +1,306 @@
+/econ/home/t/tmr17/EMalgorithmExample/mlogitOnly
+Mon Feb 27 14:43:53 EST 2017
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2014 The MathWorks, Inc.
+                   R2014b (8.4.0.150421) 64-bit (glnxa64)
+                             September 15, 2014
+
+ 
+For online documentation, see http://www.mathworks.com/support
+For product information, visit www.mathworks.com.
+ 
+  Value    Count   Percent
+      1    56483     11.30%
+      2    34411      6.88%
+      3    69414     13.88%
+      4    162932     32.59%
+      5    176760     35.35%
+
+ans =
+
+    23     1
+
+Time spent on simulation: 1.3173
+Initial likelihood value = -2379475.3194
+
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0        2.37958e+06                      1.71e+06                
+     1        2.37958e+06             10       1.71e+06          11
+     2        2.37958e+06            2.5       1.71e+06           0
+     3        1.40414e+06          0.625       5.92e+05           0
+     4             854655           1.25       4.57e+05          11
+     5             761689        1.60492       4.41e+05           3
+     6             667913        1.98271       2.82e+05           7
+     7             641918        1.34408       2.51e+04           9
+     8             640495        1.01582       3.27e+03          11
+     9             640356       0.238336            757          11
+    10             640339       0.116952            411          11
+    11             640337      0.0346923            117          11
+    12             640336      0.0173426           58.3          11
+    13             640336      0.0059759           32.8          11
+    14             640336     0.00295568           10.2          11
+    15             640336     0.00111628            8.2          11
+
+Local minimum possible.
+
+fminunc stopped because the final change in function value relative to 
+its initial value is less than the selected value of the function tolerance.
+
+
+
+Likelihood value = -2379263.031
+Pr(type==1) is 0.45128
+Iteration is 2
+EM criterion is 0.025313
+
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0             640528                           819                
+     1             640452       0.161028            209          11
+     2             640451      0.0336984           66.3          11
+     3             640451     0.00533753           12.4           9
+     4             640451     0.00340312           3.44          11
+     5             640451    0.000377099           1.61           7
+
+Local minimum possible.
+
+fminunc stopped because the final change in function value relative to 
+its initial value is less than the selected value of the function tolerance.
+
+
+
+Likelihood value = -640457.9321
+Pr(type==1) is 0.45134
+Iteration is 3
+EM criterion is 0.31706
+
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0             640459                           156                
+     1             640456      0.0322346           43.1          11
+     2             640456     0.00712711           11.9          11
+     3             640456     0.00126581           2.31          11
+
+Local minimum possible.
+
+fminunc stopped because the final change in function value relative to 
+its initial value is less than the selected value of the function tolerance.
+
+
+
+Likelihood value = -640456.018
+Pr(type==1) is 0.45134
+Iteration is 4
+EM criterion is 0.071961
+
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0             640456                          29.7                
+     1             640456     0.00657278           5.54          11
+     2             640456     0.00152897           4.03          11
+
+Local minimum possible.
+
+fminunc stopped because the final change in function value relative to 
+its initial value is less than the selected value of the function tolerance.
+
+
+
+Likelihood value = -640456.0131
+Pr(type==1) is 0.45134
+Iteration is 5
+EM criterion is 0.014086
+
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0             640456                          6.26                
+     1             640456      0.0015062           2.22          11
+
+Local minimum possible.
+
+fminunc stopped because the final change in function value relative to 
+its initial value is less than the selected value of the function tolerance.
+
+
+
+Likelihood value = -640456.0254
+Pr(type==1) is 0.45134
+Iteration is 6
+EM criterion is 0.0027666
+
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0             640456                          2.22                
+     1             640456    0.000524215           1.55          11
+
+Local minimum possible.
+
+fminunc stopped because the final change in function value relative to 
+its initial value is less than the selected value of the function tolerance.
+
+
+
+Likelihood value = -640456.0274
+Pr(type==1) is 0.45134
+Iteration is 7
+EM criterion is 0.00059312
+
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0             640456                          1.55                
+     1             640456    0.000196628          0.212          11
+
+Local minimum possible.
+
+fminunc stopped because the final change in function value relative to 
+its initial value is less than the selected value of the function tolerance.
+
+
+
+Likelihood value = -640456.0276
+Pr(type==1) is 0.45134
+Iteration is 8
+EM criterion is 0.00013968
+
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0             640456                         0.212                
+     1             640456    3.28716e-05          0.116          11
+
+Local minimum possible.
+
+fminunc stopped because the final change in function value relative to 
+its initial value is less than the selected value of the function tolerance.
+
+
+
+Likelihood value = -640456.0285
+Pr(type==1) is 0.45134
+Iteration is 9
+EM criterion is 3.9075e-05
+
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0             640456                         0.116                
+     1             640456     4.5735e-06         0.0408           5
+
+Local minimum possible.
+
+fminunc stopped because the final change in function value relative to 
+its initial value is less than the selected value of the function tolerance.
+
+
+
+Likelihood value = -640456.0287
+Pr(type==1) is 0.45134
+Iteration is 10
+EM criterion is 1.0708e-05
+
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0             640456                        0.0408                
+     1             640456    1.44684e-05         0.0217          11
+
+Local minimum possible.
+
+fminunc stopped because the final change in function value relative to 
+its initial value is less than the selected value of the function tolerance.
+
+
+
+Likelihood value = -640456.0288
+Pr(type==1) is 0.45134
+Iteration is 11
+EM criterion is 3.1451e-06
+
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0             640456                        0.0217                
+     1             640456     6.2446e-07        0.00257          11
+
+Local minimum possible.
+
+fminunc stopped because the final change in function value relative to 
+its initial value is less than the selected value of the function tolerance.
+
+
+
+
+ans =
+
+   -0.8451   -0.9000
+   -0.0001         0
+    1.0186    1.0000
+   -0.4012   -0.4000
+    0.0000    0.1000
+   -1.8998   -2.2500
+    0.0525    0.0500
+    1.1960    1.2000
+   -0.3043   -0.3000
+    0.0000    0.5000
+   -1.3434   -1.5000
+    0.1493    0.1500
+    0.0782    0.1000
+   -0.2037   -0.2000
+    0.0000    0.2000
+    0.3278   -0.1000
+   -0.0501   -0.0500
+    0.1939    0.2000
+   -0.1001   -0.1000
+    0.0000    0.6000
+    0.2002    0.2000
+    0.4994    0.5000
+    0.7941    0.8000
+
+
+ans =
+
+   -0.8451    0.0153
+   -0.0001    0.0017
+    1.0186    0.0179
+   -0.4012    0.0027
+    0.0000    0.0103
+   -1.8998    0.0191
+    0.0525    0.0021
+    1.1960    0.0215
+   -0.3043    0.0032
+    0.0000    0.0123
+   -1.3434    0.0149
+    0.1493    0.0016
+    0.0782    0.0164
+   -0.2037    0.0024
+    0.0000    0.0095
+    0.3278    0.0110
+   -0.0501    0.0012
+    0.1939    0.0126
+   -0.1001    0.0019
+    0.0000    0.0073
+    0.2002    0.0018
+    0.4994    0.0018
+    0.7941    0.0061
+
+
+ans =
+
+   -0.9000   -2.2500   -1.5000   -0.1000
+         0    0.0500    0.1500   -0.0500
+    1.0000    1.2000    0.1000    0.2000
+   -0.4000   -0.3000   -0.2000   -0.1000
+    0.1000    0.5000    0.2000    0.6000
+
+
+comp2 =
+
+   -0.8451   -1.8998   -1.3434    0.3278
+   -0.0001    0.0525    0.1493   -0.0501
+    1.0186    1.1960    0.0782    0.1939
+   -0.4012   -0.3043   -0.2037   -0.1001
+    0.0000    0.0000    0.0000    0.0000
+
+
+ans =
+
+    0.4513    0.6991
+
