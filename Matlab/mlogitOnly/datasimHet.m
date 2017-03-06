@@ -69,12 +69,12 @@ end
 options=optimset('Disp','Iter','LargeScale','on','MaxFunEvals',2000000,'MaxIter',15000,'TolX',1e-8,'Tolfun',1e-8,'GradObj','on','DerivativeCheck','off','FinDiffType','central');
 
 % EM algorithm starting values
-prior = (1/S)*ones(1,S); %(tytab(:,end)./100)';
+prior = [.6 .4]; %(tytab(:,end)./100)';
 bEst = rand(size(bAns)); % bAns;
 EMcrit = 1;
 iteration = 1;
 
-full_like     = likecalc(Yfeas,Xfeas,Zfeas,bEst,N,T,S,J);
+full_like = likecalc(Yfeas,Xfeas,Zfeas,bEst,N,T,S,J);
 [prior,Ptype,Ptypel,jointlike] = typeprob(prior,full_like,T);
 disp(['Initial likelihood value = ',num2str(jointlike)]);
 

@@ -81,9 +81,9 @@ end
 options=optimset('Disp','Iter','LargeScale','on','MaxFunEvals',2000000,'MaxIter',15000,'TolX',1e-8,'Tolfun',1e-8,'GradObj','on','DerivativeCheck','off','FinDiffType','central');
 
 % EM algorithm starting values
-prior = (1/S)*ones(1,S);
-bEst = bAns; %rand(size(bAns));
-bwEst = cat(1,bwAns,sigWans); %rand(length(bwAns)+1,1);
+prior = [.55 .45];
+bEst = bAns + .5*rand(size(bAns)).*bAns - .25*bAns;
+bwEst = [bwAns;sigWans] + .5*rand(length(bwAns)+1,1).*[bwAns;sigWans] - .25*[bwAns;sigWans];
 EMcrit = 1;
 iteration = 1;
 

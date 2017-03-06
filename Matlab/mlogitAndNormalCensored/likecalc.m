@@ -4,22 +4,24 @@ sigw = bwfull(end);
 
 P = pclogit(b,Y,X,Z);
 
-wageflagw = permute(reshape(wageflag,[N S T]),[1 3 2]);
-lnWagew   = permute(reshape(lnWage,[N S T]),[1 3 2]);
-Yw        = permute(reshape(Y,[N S T]),[1 3 2]);
-wageResw  = permute(reshape(Xwage*bw,[N S T]),[1 3 2]);
-Pw        = zeros(N,T,S,J);
+Ywtemp = reshape(Y,[N T S]);
+Pw = zeros(N,T,S,J);
+Yw = zeros(N,T,S,J);
 for j=1:J
-	Pw(:,:,:,j) = permute(reshape(P(:,j),[N S T 1]),[1 3 2 4]);
+	Pw(:,:,:,j) = reshape(P(:,j),[N T S 1]);
+	Yw(:,:,:,j) = Ywtemp==j;
 end
 
 choice_like = ones(N,S);
 for s=1:S
 	for j=1:J
-		choice_like(:,s) = choice_like(:,s).*squeeze(prod((Pw(:,:,s,j).^(Yw(:,:,s)==j)),2));
+		choice_like(:,s) = squeeze(prod(prod(Pw(:,:,s,:).^Yw(:,:,s,:),4),2));
 	end
 end
 
+wageflagw = reshape(wageflag,[N T S]);
+lnWagew   = reshape(lnWage,[N T S]);
+wageResw  = reshape(Xwage*bw,[N T S]);
 wage_like = ones(N,S);
 for s=1:S
 	wage_like(:,s) = squeeze(prod(normpdf(lnWagew(:,:,s)-wageResw(:,:,s),0,sigw).^(wageflagw(:,:,s)==1),2));

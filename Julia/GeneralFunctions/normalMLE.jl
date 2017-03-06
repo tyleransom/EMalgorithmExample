@@ -1,7 +1,7 @@
-function jumpMLE(startval,y,X,W)
+function normalMLE(startval,y,X,W)
     ## MLE of classical linear regression model
     # Declare the name of your model and the optimizer you will use
-    myMLE = Model(solver=IpoptSolver(tol=1e-6))
+    myMLE = Model(solver=IpoptSolver(tol=1e-6,print_level=0))
     
     # Declare the variables you are optimizing over
     @variable(myMLE, ß[i=1:size(X,2)], start = startval[i])
@@ -38,7 +38,7 @@ function jumpMLE(startval,y,X,W)
     # Print estimates and log likelihood value
     # println("beta = ", bOpt)
     # println("s = ", sOpt)
-    println("MLE objective: ", getobjectivevalue(myMLE))
-    println("MLE status: ", status)
+    # println("MLE objective: ", getobjectivevalue(myMLE))
+    # println("MLE status: ", status)
     return ßopt,σopt
 end

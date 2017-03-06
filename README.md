@@ -6,7 +6,7 @@ This repository contains code examples for estimating a finite mixture model via
 3. Model (2), but with censoring of the continuous outcome
 
 ## Folder Structure
-The folder structure is outlined below:
+The folder structure within each language's folder is outlined below:
 
 - **General Functions**: Contains functions that can be used in any of the model: 
     * MLE objective functions for optimization (used in the Maximization step of the EM algorithm)
@@ -24,3 +24,4 @@ Some miscellaneous tips for estimating EM algorithms:
 - General tip is to start from the solution (if a simulation) or start from the zero-types estimate (if not a simulation)
 - The overall likelihood of the model should increase with each EM iteration
 - If maximization is overly burdensome, you can loosen the convergence criteria at this step for the first few iterations of the algorithm. This may improve performance.
+- Convergence is typically more difficult in models where there is not a continuous outcome (i.e. the "mlogitOnly" folder). This is because there is much less variation with which to pick up the unobserved types in discrete response models.
