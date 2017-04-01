@@ -91,67 +91,23 @@ wageflag = Y<(J/2+1) & emp==1;
 lnWage(~wageflag) = -999;
 
 disp(['Time spent on simulation: ',num2str(toc)]);
-
-% Now estimate without knowing unobserved types:
-Xfeas        = cat(2,kron(ones(S,1),X(:,1:end-1)),kron(eye(S,S-1),ones(length(X),1)));
-Xempfeas     = cat(2,kron(ones(S,1),Xemp(:,1:end-1)),kron(eye(S,S-1),ones(length(Xemp),1)));
-Xwagefeas    = cat(2,kron(ones(S,1),Xwage(:,1:end-1)),kron(eye(S,S-1),ones(length(Xwage),1)));
-empflagfeas  = kron(ones(S,1),empflag);
-wageflagfeas = kron(ones(S,1),wageflag);
-Yfeas        = kron(ones(S,1),Y);
-lnWfeas      = kron(ones(S,1),lnWage);
-empfeas      = kron(ones(S,1),emp);
-Zfeas = [];
-for s=1:S
-	Zfeas = cat(1,Zfeas,Z);
-end
 options=optimset('Disp','Iter','LargeScale','on','MaxFunEvals',2000000,'MaxIter',15000,'TolX',1e-8,'Tolfun',1e-8,'GradObj','on','DerivativeCheck','off','FinDiffType','central');
 
-% EM algorithm starting values
-prior = [.55 .45];
-alpha = .9
-bEst = bAns + alpha*rand(size(bAns)).*bAns - (alpha/2)*bAns;
-bwEst = [bwAns;sigWans] + alpha*rand(length(bwAns)+1,1).*[bwAns;sigWans] - (alpha/2)*[bwAns;sigWans];
-beEst = beAns + alpha*rand(length(beAns),1).*beAns - (alpha/2)*beAns;
-EMcrit = 1;
-iteration = 1;
-
-full_like = likecalc(Yfeas,empfeas,lnWfeas,Xfeas,Xempfeas,Xwagefeas,Zfeas,bEst,beEst,bwEst,empflagfeas,wageflagfeas,N,T,S,J);
-[prior,Ptype,Ptypel,jointlike] = typeprob(prior,full_like,T);
-disp(['Initial likelihood value = ',num2str(jointlike)]);
-
-while EMcrit>1e-5 && iteration<101
-	oPtype = Ptype;
-	full_like = likecalc(Yfeas,empfeas,lnWfeas,Xfeas,Xempfeas,Xwagefeas,Zfeas,bEst,beEst,bwEst,empflagfeas,wageflagfeas,N,T,S,J);
-	[prior,Ptype,Ptypel,jointlike] = typeprob(prior,full_like,T);
-	[bEst]  = fminunc('clogit'   ,bEst ,options,[],Yfeas  ,Xfeas,Zfeas,[],Ptypel);
-	[beEst] = glmfit(Xempfeas(empflagfeas==1,2:end),empfeas(empflagfeas==1),'binomial','link','logit','weights',Ptypel(empflagfeas==1));
-	[bwEst] = fminunc('normalMLE',bwEst,options,[],lnWfeas(wageflagfeas==1),Xwagefeas(wageflagfeas==1,:),Ptypel(wageflagfeas==1));
-	EMcrit = norm(Ptype(:)-oPtype(:),Inf);
-	iteration = iteration+1;
-	disp(['Likelihood value = ',num2str(jointlike)]);
-	disp(['Pr(type==1) is ',num2str(prior(1))]);
-	disp(['Iteration is ',num2str(iteration)]);
-	disp(['EM criterion is ',num2str(EMcrit)]);
-end
-
 % re-estimate to get choice model hessian for statistical inference
-[bEst,lEst,~,~,~,hEst] = fminunc('clogit',bEst,options,[],Yfeas,Xfeas,Zfeas,[],Ptypel);
+[bEst,lEst,~,~,~,hEst] = fminunc('clogit',rand(size(bAns)),options,[],Y,X,Z,[]);
 hEst = full(hEst);
 se = sqrt(diag(inv(hEst)));
 [bEst bAns]
 [bEst se]
 
 % re-estimate to get employment model hessian for statistical inference
-[beEst,~,bestats] = glmfit(Xempfeas(empflagfeas==1,2:end),empfeas(empflagfeas==1),'binomial','link','logit','weights',Ptypel(empflagfeas==1));
+[beEst,~,bestats] = glmfit(Xemp(empflag==1,2:end),emp(empflag==1),'binomial','link','logit');
 [beEst beAns]
 [beEst bestats.se]
 
 % re-estimate to get wage model hessian for statistical inference
-[bwEst,lwEst,~,~,~,hwEst] = fminunc('normalMLE',bwEst,options,[],lnWfeas(wageflagfeas==1),Xwagefeas(wageflagfeas==1,:),Ptypel(wageflagfeas==1));
+[bwEst,lwEst,~,~,~,hwEst] = fminunc('normalMLE',rand(size(cat(1,bwAns,sigWans))),options,[],lnWage(wageflag==1),Xwage(wageflag==1,:),[],[]);
 hwEst = full(hwEst);
 se = sqrt(diag(inv(hwEst)));
 [bwEst cat(1,bwAns,sigWans)]
 [bwEst se]
-
-[prior(1) piAns mean(type)]

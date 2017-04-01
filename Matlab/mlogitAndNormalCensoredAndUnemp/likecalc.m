@@ -2,8 +2,12 @@ function full_like = likecalc(Y,emp,lnWage,X,Xemp,Xwage,Z,b,be,bwfull,empflag,wa
 bw   = bwfull(1:end-1);
 sigw = bwfull(end);
 
-Pe = pclogit(be,emp+1,Xemp,[],1);
+Pe2 = glmval(be,Xemp(:,2:end),'logit');
+Pe1 = pclogit(be,emp+1,Xemp,[],1);
+Pe = exp(Xemp*be)./(1+exp(Xemp*be));
 P  = pclogit(b,Y,X,Z);
+assert(norm(Pe-Pe1(:,end))<1e-12,'P''s not computed in same way!')
+assert(norm(Pe-Pe2(:,end))<1e-12,'P''s not computed in same way!')
 
 Ywtemp = reshape(Y,[N T S]);
 Pw = zeros(N,T,S,J);

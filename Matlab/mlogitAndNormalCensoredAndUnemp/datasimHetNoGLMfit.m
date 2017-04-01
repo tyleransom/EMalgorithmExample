@@ -30,9 +30,9 @@ X1wage = [X(:,1:end-1) rand(N*T,1) 2.5+2*randn(N*T,1) typew(:)];
 X1emp = [X(:,1:end-1) 2.5+2*randn(N*T,1) rand(N*T,1) 2.5+2*randn(N*T,1) typew(:)];
 
 % X coefficients
-b(:,1) = [ 1.15; 0.10; 0.50; 0.10; -.15];
-b(:,2) = [ 0.90; 0.15; 0.70; 0.20;  .25];
-b(:,3) = [ 0.75; 0.25;-0.40; 0.30; -.05];
+b(:,1) = [-0.15; 0.10; 0.50; 0.10; -.15];
+b(:,2) = [-0.90; 0.15; 0.70; 0.20;  .25];
+b(:,3) = [-0.75; 0.25;-0.40; 0.30; -.05];
 b(:,4) = [ 0.65; 0.05;-0.30; 0.40;  .35];
 b(:,5) = [ 0.75; 0.10;-0.50; 0.50; -.25];
 b(:,6) = [-0.65; 0.05; 0.30; 0.40;  .15];
@@ -46,8 +46,7 @@ bwAns = round(bwAns,1)
 sigWans    = .3;
 
 % employment coefficients
-beAns(:,1) = .5*rand(size(X1emp,2),1)-.25;
-beAns(1) = beAns(1)-2;
+beAns(:,1) = rand(size(X1emp,2),1)-.5;
 beAns = round(beAns,1)
 
 % generate choice probabilities
@@ -80,7 +79,7 @@ for j=1:J
 end
 emp = rand(N*T,1)<pe;
 empflag = Y<(J/2+1);
-emp(~empflag) = -999;
+emp(Y>(J/2)) = -999;
 tabulate(emp);
 tabulate(emp(Y<(J/2+1)));
 
@@ -125,7 +124,7 @@ while EMcrit>1e-5 && iteration<101
 	full_like = likecalc(Yfeas,empfeas,lnWfeas,Xfeas,Xempfeas,Xwagefeas,Zfeas,bEst,beEst,bwEst,empflagfeas,wageflagfeas,N,T,S,J);
 	[prior,Ptype,Ptypel,jointlike] = typeprob(prior,full_like,T);
 	[bEst]  = fminunc('clogit'   ,bEst ,options,[],Yfeas  ,Xfeas,Zfeas,[],Ptypel);
-	[beEst] = glmfit(Xempfeas(empflagfeas==1,2:end),empfeas(empflagfeas==1),'binomial','link','logit','weights',Ptypel(empflagfeas==1));
+	[beEst] = fminunc('clogit'   ,beEst,options,[],empfeas(empflagfeas==1)+1,Xempfeas(empflagfeas==1,:),[],1,Ptypel(empflagfeas==1));
 	[bwEst] = fminunc('normalMLE',bwEst,options,[],lnWfeas(wageflagfeas==1),Xwagefeas(wageflagfeas==1,:),Ptypel(wageflagfeas==1));
 	EMcrit = norm(Ptype(:)-oPtype(:),Inf);
 	iteration = iteration+1;
@@ -143,9 +142,11 @@ se = sqrt(diag(inv(hEst)));
 [bEst se]
 
 % re-estimate to get employment model hessian for statistical inference
-[beEst,~,bestats] = glmfit(Xempfeas(empflagfeas==1,2:end),empfeas(empflagfeas==1),'binomial','link','logit','weights',Ptypel(empflagfeas==1));
+[beEst,leEst,~,~,~,heEst] = fminunc('clogit'   ,beEst,options,[],empfeas(empflagfeas==1)+1,Xempfeas(empflagfeas==1,:),[],1,Ptypel(empflagfeas==1));
+heEst = full(heEst);
+se = sqrt(diag(inv(heEst)));
 [beEst beAns]
-[beEst bestats.se]
+[beEst se]
 
 % re-estimate to get wage model hessian for statistical inference
 [bwEst,lwEst,~,~,~,hwEst] = fminunc('normalMLE',bwEst,options,[],lnWfeas(wageflagfeas==1),Xwagefeas(wageflagfeas==1,:),Ptypel(wageflagfeas==1));
