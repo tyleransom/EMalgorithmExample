@@ -23,7 +23,7 @@ lnWagew  = reshape(lnWage,[N T S]);
 wageResw = reshape(Xwage*bw,[N T S]);
 wage_like = ones(N,S);
 for s=1:S
-	wage_like(:,s) = squeeze(prod(normpdf(lnWagew(:,:,s)-wageResw(:,:,s),0,sigw).^(wageflag(:,:,s)==1),2));
+	wage_like(:,s) = squeeze(prod(normpdf(lnWagew(:,:,s)-wageResw(:,:,s),0,sigw),2));
 end
 
 full_like = choice_like.*wage_like;
