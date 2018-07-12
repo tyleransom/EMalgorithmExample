@@ -76,5 +76,9 @@ for j=1:J
     temp = 1./wagesigma(j)-((Y-X*beta).^2)./(wagesigma(j).^3);
     grad(k) = sum(W.*(d==j).*temp);
 end
+% apply restrictions to gradient
+if ~isempty(restrMat)
+    grad = applyRestrGrad(restrMat,grad);
+end
  
 end
