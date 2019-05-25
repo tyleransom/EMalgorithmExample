@@ -1,68 +1,74 @@
 # Simple estimation of finite mixture multinomial logit using simulated data
 # Use EM algorithm to estimate type-specific coefficients
-using JuMP
-using Ipopt
+using Optim
+using LineSearches
 using Distributions
+using Random
+using LinearAlgebra
 
 include("../GeneralFunctions/typeprob.jl")
 include("../GeneralFunctions/normalMLE.jl")
 include("../GeneralFunctions/pclogit.jl")
-include("../GeneralFunctions/clogit.jl")
+include("../GeneralFunctions/asclogit.jl")
 include("likecalc.jl")
 include("datagen.jl")
 
-# Simulate data
-N = 1e3
-T = 3
-@time X,Y,Z,Xwage,lnWage,ßans,γans,ωans,σans,n,J,K1,K2,baseAlt,S,IDw,Tw,typerw = datagen(N,T)
+Random.seed!(1234)
 
-# Now estimate without knowing unobserved types:
-# Treat last element of X as unobserved, and double the data
-Xfeas      = cat(2,kron(ones(S,1),X[:,1:end-1]),kron(eye(S,S-1),ones(size(X,1),1)))
-Xwagefeas  = Xfeas
-lnWagefeas = kron(ones(S,1),lnWage)
-Yfeas      = kron(ones(S,1),Y)
-IDfeas     = kron(ones(S,1),IDw[:])
-Twfeas     = kron(ones(S,1),Tw[:])
-Zfeas      = Z
-for s=1:S-1
-    Zfeas = cat(1,Zfeas,Z)
-end
+function datersim()
+    # Simulate data
+    N = 1_000
+    T = 5
+    @time X,Y,Z,Xwage,lnWage,βans,γans,ωans,σans,n,J,K1,K2,baseAlt,S,IDw,Tw,typerw = datagen(N,T)
 
-# EM algorithm starting values
-prior = cat(2,.35,.65)
-ßest = cat(1,ßans,γans)+.25*rand(size(cat(1,ßans,γans))).*cat(1,ßans,γans)-.125*cat(1,ßans,γans)
-ωest = cat(1,ωans,σans)+.25*rand(size(cat(1,ωans,σans))).*cat(1,ωans,σans)-.125*cat(1,ωans,σans)
-EMcrit = 1
-iteration = 1
+    # Now estimate without knowing unobserved types:
+    # Treat last element of X as unobserved, and double the data
+    Xfeas      = hcat(kron(ones(S,1),X[:,1:end-1]),kron(Matrix(1.0I,S,S-1),ones(size(X,1))))
+    Xwagefeas  = Xfeas
+    lnWagefeas = repeat(lnWage,S,1)
+    Yfeas      = repeat(Y,S,1)
+    IDfeas     = repeat(IDw[:],S,1)
+    Twfeas     = repeat(Tw[:],S,1)
+    Zfeas      = repeat(Z,S,1,1)
 
-full_like = likecalc(Yfeas,Xfeas,Zfeas,lnWagefeas,Xwagefeas,ßest,ωest,N,T,S,J)
-prior,Ptype,Ptypel,jointlike = typeprob(prior,full_like,T)
-println("")
-println("Initial likelihood value = ",jointlike)
+    # EM algorithm starting values
+    prior = hcat(.55,.45)
+    βest = vcat(βans,γans) .+ .5 .*rand(Float64,size(vcat(βans,γans))) .* vcat(βans,γans) .- .25 .* vcat(βans,γans)
+    ωest = vcat(ωans,σans) .+ .5 .*rand(Float64,size(vcat(ωans,σans))) .* vcat(ωans,σans) .- .25 .* vcat(ωans,σans)
+    EMcrit = 1
+    iteration = 1
 
-while EMcrit>1e-5
-    oPtype = Ptype
-    # E step
-    full_like = likecalc(Yfeas,Xfeas,Zfeas,lnWagefeas,Xwagefeas,ßest,ωest,N,T,S,J)
+    full_like = likecalc(Yfeas,Xfeas,Zfeas,lnWagefeas,Xwagefeas,βest,ωest,N,T,S,J)
     prior,Ptype,Ptypel,jointlike = typeprob(prior,full_like,T)
-    # M step
-    ßopt,γopt = clogit(ßest,Yfeas,Xfeas,Zfeas,size(Zfeas,3),Ptypel)
-    ßest = cat(1,ßopt,γopt)
-    ωopt,σopt = normalMLE(ωest,lnWagefeas,Xfeas,Ptypel)
-    ωest = cat(1,ωopt,σopt)
-    EMcrit = norm(Ptype[:]-oPtype[:],Inf)
-    iteration += 1
     println("")
-    println("Likelihood value = ",jointlike)
-    println("Pr(type==1) is ",prior[1])
-    println("Iteration is ",iteration)
-    println("EM criterion is ",EMcrit)
-    println("")
-    # save tempResults *feas typebs iteration
-end
+    println("Initial likelihood value = ",jointlike)
 
-# # # # compare answers
-# # # compareAns=cat(2,cat(1,ßans[:],γans),cat(1,ßopt,γopt))
-# # # println(compareAns[:,1])
-# # # println(compareAns[:,2])
+    while EMcrit>1e-4
+    #while iteration<10
+        oPtype = Ptype
+        # E step
+        full_like = @time likecalc(Yfeas,Xfeas,Zfeas,lnWagefeas,Xwagefeas,βest,ωest,N,T,S,J)
+        prior,Ptype,Ptypel,jointlike = @time typeprob(prior,full_like,T)
+        # M step
+        βest,se_βest,ℓ,g = @time asclogit(vec(βest),vec(Yfeas),Xfeas,Zfeas,size(Zfeas,3),size(Zfeas,3),vec(Ptypel))
+        P = @time pclogit(βest,Y,X,Z,J)
+        ωest,se_ωest,ℓ,g = @time normalMLE(vec(ωest),lnWagefeas,Xwagefeas,vec(Ptypel))
+        EMcrit = norm(Ptype[:].-oPtype[:],Inf)
+        iteration += 1
+        println("")
+        println("Likelihood value = ",jointlike)
+        println("Pr(type==1) is ",prior[1])
+        println("Iteration is ",iteration)
+        println("EM criterion is ",EMcrit)
+        println("")
+    end
+
+    # compare answers
+    compareAns=hcat(βest,vcat(βans,γans))
+    println(compareAns[:,1])
+    println(compareAns[:,2])
+    compareAns=hcat(ωest,vcat(ωans,σans))
+    println(compareAns[:,1])
+    println(compareAns[:,2])
+end
+datersim()
